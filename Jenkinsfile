@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         APP_NAME = 'web-project'
-        NODE_ENV = 'production'
     }
 
     stages {
@@ -21,14 +20,16 @@ pipeline {
                 echo "========== STAGE: Install Dependencies =========="
                 bat 'node --version'
                 bat 'npm --version'
-                bat 'npm install'
+                // --include=dev ensures devDependencies (jest, eslint) are installed
+                bat 'npm install --include=dev'
             }
         }
 
         stage('Lint') {
             steps {
                 echo "========== STAGE: Lint =========="
-                bat 'npm run lint || echo Lint warnings found (non-blocking)'
+                // exit /b 0 ensures lint never fails the build
+                bat 'npm run lint & exit /b 0'
             }
         }
 
@@ -63,8 +64,6 @@ pipeline {
             steps {
                 echo "========== STAGE: Deploy =========="
                 echo "Deploying ${APP_NAME} to production..."
-                // Add Windows deployment commands here, e.g.:
-                // bat 'xcopy /E /I . C:\\inetpub\\wwwroot\\web-project'
                 echo "Deployment complete!"
             }
         }
