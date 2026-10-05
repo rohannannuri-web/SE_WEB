@@ -19,30 +19,30 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo "========== STAGE: Install Dependencies =========="
-                sh 'node --version'
-                sh 'npm --version'
-                sh 'npm install'
+                bat 'node --version'
+                bat 'npm --version'
+                bat 'npm install'
             }
         }
 
         stage('Lint') {
             steps {
                 echo "========== STAGE: Lint =========="
-                sh 'npm run lint || echo "Lint warnings found (non-blocking)"'
+                bat 'npm run lint || echo Lint warnings found (non-blocking)'
             }
         }
 
         stage('Test') {
             steps {
                 echo "========== STAGE: Test =========="
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
         stage('Build') {
             steps {
                 echo "========== STAGE: Build =========="
-                sh 'npm run build'
+                bat 'npm run build'
                 echo "Build completed successfully!"
             }
         }
@@ -63,8 +63,8 @@ pipeline {
             steps {
                 echo "========== STAGE: Deploy =========="
                 echo "Deploying ${APP_NAME} to production..."
-                // Add deployment commands here, e.g.:
-                // sh 'pm2 restart web-project || pm2 start index.js --name web-project'
+                // Add Windows deployment commands here, e.g.:
+                // bat 'xcopy /E /I . C:\\inetpub\\wwwroot\\web-project'
                 echo "Deployment complete!"
             }
         }
@@ -85,7 +85,7 @@ pipeline {
         }
         always {
             echo "Pipeline finished. Cleaning up..."
-            sh 'rm -rf node_modules || true'
+            bat 'if exist node_modules rmdir /s /q node_modules'
             cleanWs()
         }
     }
