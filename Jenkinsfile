@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    // Tool configuration (Node.js must be configured in Jenkins Global Tool Configuration)
-    tools {
-        nodejs 'NodeJS-18'
-    }
-
     environment {
         APP_NAME = 'web-project'
         NODE_ENV = 'production'
@@ -24,44 +19,30 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo "========== STAGE: Install Dependencies =========="
-                dir('web-project') {
-                    sh 'node --version'
-                    sh 'npm --version'
-                    sh 'npm install'
-                }
+                sh 'node --version'
+                sh 'npm --version'
+                sh 'npm install'
             }
         }
 
         stage('Lint') {
             steps {
                 echo "========== STAGE: Lint =========="
-                dir('web-project') {
-                    sh 'npm run lint || echo "Lint warnings found (non-blocking)"'
-                }
+                sh 'npm run lint || echo "Lint warnings found (non-blocking)"'
             }
         }
 
         stage('Test') {
             steps {
                 echo "========== STAGE: Test =========="
-                dir('web-project') {
-                    sh 'npm test -- --ci --reporters=default --reporters=jest-junit'
-                }
-            }
-            post {
-                always {
-                    // Publish Jest test results (requires jest-junit reporter)
-                    junit allowEmptyResults: true, testResults: 'web-project/junit.xml'
-                }
+                sh 'npm test'
             }
         }
 
         stage('Build') {
             steps {
                 echo "========== STAGE: Build =========="
-                dir('web-project') {
-                    sh 'npm run build'
-                }
+                sh 'npm run build'
                 echo "Build completed successfully!"
             }
         }
@@ -69,8 +50,8 @@ pipeline {
         stage('Archive Artifacts') {
             steps {
                 echo "========== STAGE: Archive Artifacts =========="
-                archiveArtifacts artifacts: 'web-project/**/*',
-                                 excludes: 'web-project/node_modules/**',
+                archiveArtifacts artifacts: '**/*',
+                                 excludes: 'node_modules/**',
                                  fingerprint: true
             }
         }
@@ -82,8 +63,7 @@ pipeline {
             steps {
                 echo "========== STAGE: Deploy =========="
                 echo "Deploying ${APP_NAME} to production..."
-                // Add deployment commands, for example:
-                // sh 'rsync -avz --exclude node_modules/ . user@server:/var/www/html/'
+                // Add deployment commands here, e.g.:
                 // sh 'pm2 restart web-project || pm2 start index.js --name web-project'
                 echo "Deployment complete!"
             }
@@ -105,9 +85,7 @@ pipeline {
         }
         always {
             echo "Pipeline finished. Cleaning up..."
-            dir('web-project') {
-                sh 'rm -rf node_modules || true'
-            }
+            sh 'rm -rf node_modules || true'
             cleanWs()
         }
     }
