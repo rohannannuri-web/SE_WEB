@@ -1,0 +1,19 @@
+{
+  "name": "web-project",
+  "version": "1.0.0",
+  "description": "A simple web project for Jenkins CI/CD pipeline demo",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest --coverage",
+    "build": "echo Building web project... && npm run test",
+    "lint": "eslint src/"
+  },
+  "keywords": ["web", "jenkins", "ci-cd"],
+  "author": "SE Lab",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "eslint": "^8.42.0"
+  }
+}
